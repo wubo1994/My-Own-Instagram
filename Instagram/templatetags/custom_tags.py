@@ -2,14 +2,11 @@ import re
 
 from django import template
 from django.urls import NoReverseMatch, reverse
-from Instagram.models import Like
+from Instagram.models import Like, UserConnection
 
 
 register = template.Library()
 
-@register.simple_tag
-def is_following(current_user, background_user):
-    return background_user.get_followers().filter(creator=current_user).exists()
 
 @register.simple_tag
 def user_liked_post(user, post):
@@ -29,3 +26,7 @@ def active(context, pattern_or_urlname):
     if re.search(pattern, path):
         return 'active'
     return ''
+
+@register.simple_tag
+def is_following(user1, user2):
+    return user2.get_followers().filter(follower=user1).exists()

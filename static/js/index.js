@@ -9,7 +9,7 @@ function error_callback(error) {
  *
  */
 
-function create_like(success_cb, error_callback) {
+function create_like(success_callback, error_callback) {
     var post_pk = $(this).siblings('.hidden-data').find('.post-pk').text();
     console.log(post_pk);
 
@@ -19,7 +19,7 @@ function create_like(success_cb, error_callback) {
         data: {
             post_pk: post_pk
         },
-        success: function(data) { success_cb(data); },
+        success: function(data) { success_callback(data); },
         error: function(error) { error_callback(error); }
     });
 }
@@ -76,7 +76,7 @@ function validComment(text) {
     return true;
 }
   
-function create_comment(success_cb, error_callback) {
+function create_comment(success_callback, error_callback) {
     var comment_text = $(this).val();
     var post_pk = $(this).parent().siblings('.hidden-data').find('.post-pk').text();
   
@@ -84,12 +84,12 @@ function create_comment(success_cb, error_callback) {
   
     $.ajax({
       type: "POST",
-      url: '/comment',
+      url: '/instagram/comment',
       data: {
         comment_text: comment_text,
         post_pk: post_pk
       },
-      success: function(data) { success_cb(data); },
+      success: function(data) { success_callback(data); },
       error: function(error) { error_callback(error); }
     });
 }
@@ -97,8 +97,8 @@ function create_comment(success_cb, error_callback) {
 function comment_update_view(data) {
     console.log(data);
     var $post = $('.hidden-data.' + data.post_pk);
-    var commentHTML = '<li class="comment-list__comment"><a class="user"> ' + data.commenter_info.username + '</a> <span class="comment">'
-                    + data.commenter_info.comment_text +'</span></li>'
+    var commentHTML = '<li class="comment-list__comment"><a class="user"> ' + data.comment_info.username + '</a> <span class="comment">'
+                    + data.comment_info.comment_text +'</span></li>'
   
     $post.closest('.view-update').find('.comment-list').append(commentHTML);
   }
@@ -119,18 +119,20 @@ function comment_update_view(data) {
  *
  */
 
-function follow_user(success_cb, error_callback, type) {
+
+function follow_user(success_callback, error_callback, type) {
+    console.log('calling follow_user')
     var follow_user_pk = $(this).attr('id');
     console.log(follow_user_pk);
   
     $.ajax({
       type: "POST",
-      url: '/togglefollow',
+      url: '/instagram/togglefollow',
       data: {
         follow_user_pk: follow_user_pk,
         type: type
       },
-      success: function(data) { success_cb(data); },
+      success: function(data) { success_callback(data); },
       error: function(error) { error_callback(error); }
     });
 }
@@ -159,11 +161,13 @@ function update_unfollow_view(data) {
     $span.text(span_text - 1);
 }
 
-
 $('.follow-toggle__container').on('click', '.follow-user', function() {
-    follow_user.call(this, update_follow_view, error_callback, 'follow');
+  console.log('calling click');
+  follow_user.call(this, update_follow_view, error_callback, 'follow');
 });
 
 $('.follow-toggle__container').on('click', '.unfollow-user', function() {
-    follow_user.call(this, update_unfollow_view, error_callback, 'unfollow');
+  console.log('calling click unfollow user');
+  follow_user.call(this, update_unfollow_view, error_callback, 'unfollow');
 });
+
